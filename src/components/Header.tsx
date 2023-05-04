@@ -1,6 +1,9 @@
-import * as React from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import { InputBase, alpha, styled } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
@@ -9,14 +12,9 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { Grid, InputBase, TextField, alpha, styled } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
+import * as React from "react";
 
 interface Props {
   /**
@@ -79,6 +77,11 @@ const navItems = [
   },
   {
     icon: "",
+    name: "category",
+    route: "/",
+  },
+  {
+    icon: "",
     name: "User",
     route: "/",
   },
@@ -118,16 +121,6 @@ export default function Header(props: Props) {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
-  const [editorData, setEditorData] = React.useState("");
-  function handleEditorChange(event: any, editor: any) {
-    const data = editor.getData();
-    setEditorData(data);
-  }
-
-  const editorConfig = {
-    minHeight: "200px",
-  };
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -147,14 +140,14 @@ export default function Header(props: Props) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            MUI
+            MINICRM
           </Typography>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="Search…"
+              placeholder="Search Blog…"
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
@@ -186,45 +179,6 @@ export default function Header(props: Props) {
         >
           {drawer}
         </Drawer>
-      </Box>
-      <Box component="main" sx={{ p: 3, width: "80%", mx: "auto" }}>
-        <Toolbar />
-        <Grid container spacing={2} width="100%">
-          <Grid item md={6}>
-            <TextField id="title" label="Title" variant="filled" fullWidth />
-          </Grid>
-          <Grid item md={6}>
-            <TextField id="author" label="Author" variant="filled" fullWidth />
-          </Grid>
-          <Grid item md={12}>
-            <TextField
-              id="details"
-              label="Brief"
-              variant="filled"
-              fullWidth
-              multiline
-              rows={4}
-            />
-          </Grid>
-          <Grid item md={6}>
-            <TextField
-              id="thumbnail"
-              label="Thumbnail URL"
-              variant="filled"
-              fullWidth
-            />
-          </Grid>
-          <Grid item md={6}>
-            <TextField id="slug" label="Slug" variant="filled" fullWidth />
-          </Grid>
-          <Grid item md={12}>
-            <CKEditor
-              editor={ClassicEditor}
-              data={editorData}
-              onChange={handleEditorChange}
-            />
-          </Grid>
-        </Grid>
       </Box>
     </Box>
   );
