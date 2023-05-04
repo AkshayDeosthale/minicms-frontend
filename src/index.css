@@ -1,0 +1,4 @@
+/* App.css */
+.ck .ck-editor__main .ck-editor__editable {
+  min-height: 400px;
+}
