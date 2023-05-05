@@ -15,6 +15,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
+import BlogListDrawer from "./BlogListDrawer";
 
 interface Props {
   /**
@@ -100,6 +101,11 @@ export default function Header(props: Props) {
     setMobileOpen((prevState) => !prevState);
   };
 
+  //list drawer
+  const [listDrawerOpen, setListDrawerOpen] = React.useState(false);
+  const openListDrawer = () => setListDrawerOpen(true);
+  const closeListDrawer = () => setListDrawerOpen(false);
+
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
@@ -107,13 +113,11 @@ export default function Header(props: Props) {
       </Typography>
       <Divider />
       <List>
-        {navItems.map((item, key) => (
-          <ListItem key={key} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        <ListItem disablePadding>
+          <ListItemButton sx={{ textAlign: "center" }} onClick={openListDrawer}>
+            <ListItemText primary="List" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   );
@@ -123,6 +127,11 @@ export default function Header(props: Props) {
 
   return (
     <Box sx={{ display: "flex" }}>
+      <BlogListDrawer
+        listDrawerOpen={listDrawerOpen}
+        openListDrawer={openListDrawer}
+        closeListDrawer={closeListDrawer}
+      />
       <CssBaseline />
       <AppBar component="nav">
         <Toolbar>
@@ -152,11 +161,9 @@ export default function Header(props: Props) {
             />
           </Search>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navItems.map((item, key) => (
-              <Button key={key} sx={{ color: "#fff" }}>
-                {item.name}
-              </Button>
-            ))}
+            <Button sx={{ color: "#fff" }} onClick={openListDrawer}>
+              List
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
