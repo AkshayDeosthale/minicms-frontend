@@ -114,8 +114,13 @@ export default function Header(props: Props) {
       <Divider />
       <List>
         <ListItem disablePadding>
-          <ListItemButton sx={{ textAlign: "center" }} onClick={openListDrawer}>
+          <ListItemButton sx={{ textAlign: "left" }} onClick={openListDrawer}>
             <ListItemText primary="List" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton sx={{ textAlign: "left" }} onClick={openListDrawer}>
+            <ListItemText primary="Categories" />
           </ListItemButton>
         </ListItem>
       </List>

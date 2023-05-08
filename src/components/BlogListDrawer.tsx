@@ -10,6 +10,9 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import { Avatar, Typography } from "@mui/material";
+import axios from "axios";
+import { apiUrl } from "./BlogDetail";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -24,34 +27,41 @@ export default function BlogListDrawer({
   closeListDrawer,
   listDrawerOpen,
 }: Props) {
+  const [blogList, setBlogList] = React.useState([]);
+  const fetchBlogList = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}/blogs`);
+      setBlogList(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  React.useEffect(() => {
+    fetchBlogList();
+  }, []);
+
   const list = (anchor: Anchor) => (
     <Box
-      sx={{ width: { xs: 300, md: 500 } }}
+      sx={{ width: { xs: 300, md: 500 }, padding: 2 }}
       role="presentation"
       onClick={closeListDrawer}
       onKeyDown={closeListDrawer}
     >
-      <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <Typography variant="h3" marginBottom={2}>
+        Blogs
+      </Typography>
       <Divider />
       <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
+        {blogList.map((blog: any, index) => (
+          <ListItem key={index} disablePadding>
             <ListItemButton>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <Avatar>{blog.thumbnailUrl}</Avatar>
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <Box>
+                <ListItemText primary={blog.title} />
+                <ListItemText primary={`By ${blog.author}`} />
+              </Box>
             </ListItemButton>
           </ListItem>
         ))}

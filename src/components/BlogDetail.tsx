@@ -34,7 +34,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {};
 
-const apiUrl = import.meta.env.VITE_API_URL;
+export const apiUrl = import.meta.env.VITE_API_URL;
 
 export type FormTypes = {
   title: string;
