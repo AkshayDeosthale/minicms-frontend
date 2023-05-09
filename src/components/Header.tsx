@@ -119,7 +119,7 @@ export default function Header(props: Props) {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton sx={{ textAlign: "left" }} onClick={openListDrawer}>
+          <ListItemButton sx={{ textAlign: "left" }}>
             <ListItemText primary="Categories" />
           </ListItemButton>
         </ListItem>
@@ -169,6 +169,9 @@ export default function Header(props: Props) {
             <Button sx={{ color: "#fff" }} onClick={openListDrawer}>
               List
             </Button>
+          </Box>
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Button sx={{ color: "#fff" }}>Categories</Button>
           </Box>
         </Toolbar>
       </AppBar>

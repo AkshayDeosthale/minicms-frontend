@@ -1,18 +1,18 @@
-import * as React from "react";
+import AddIcon from "@mui/icons-material/Add";
+import { Avatar, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
-import Button from "@mui/material/Button";
-import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
-import { Avatar, Typography } from "@mui/material";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { apiUrl } from "./BlogDetail";
+import DOMPurify from "dompurify";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -27,6 +27,7 @@ export default function BlogListDrawer({
   closeListDrawer,
   listDrawerOpen,
 }: Props) {
+  const navigate = useNavigate();
   const [blogList, setBlogList] = React.useState([]);
   const fetchBlogList = async () => {
     try {
@@ -50,21 +51,41 @@ export default function BlogListDrawer({
       <Typography variant="h3" marginBottom={2}>
         Blogs
       </Typography>
+
+      <Divider />
+      <ListItem disablePadding>
+        <ListItemButton onClick={() => navigate(`/blog/create`)}>
+          <ListItemIcon>
+            <AddIcon />
+          </ListItemIcon>
+          <Box>
+            <ListItemText primary="Create Blog" />
+          </Box>
+        </ListItemButton>
+      </ListItem>
       <Divider />
       <List>
-        {blogList.map((blog: any, index) => (
-          <ListItem key={index} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                <Avatar>{blog.thumbnailUrl}</Avatar>
-              </ListItemIcon>
-              <Box>
-                <ListItemText primary={blog.title} />
-                <ListItemText primary={`By ${blog.author}`} />
-              </Box>
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {blogList.map((blog: any, index) => {
+          return (
+            <ListItem key={index} disablePadding>
+              <ListItemButton onClick={() => navigate(`/blog/${blog._id}`)}>
+                <ListItemIcon>
+                  <Avatar src={blog.thumbnailUrl} variant="rounded">
+                    {blog.thumbnailUrl}
+                  </Avatar>
+                </ListItemIcon>
+                <Box>
+                  <ListItemText primary={blog.title} />
+                  <ListItemText
+                    primary={
+                      <Typography variant="body2">By {blog.author}</Typography>
+                    }
+                  />
+                </Box>
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </Box>
   );
