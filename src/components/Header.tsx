@@ -163,7 +163,7 @@ export default function Header(props: Props) {
             }}
             onClick={() => navigate("/blog/create")}
           >
-            MINICRM
+            Pocket Blog
           </Typography>
           <Search></Search>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
