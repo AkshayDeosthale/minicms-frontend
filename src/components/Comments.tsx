@@ -9,8 +9,14 @@ import Avatar from "@mui/material/Avatar";
 import { Box, Divider, Typography } from "@mui/material";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { CommentsType, FormTypes } from "./BlogDetailByID.tsx/DetailById";
 
-export default function Comments() {
+type Props = {
+  values: FormTypes;
+};
+
+export default function Comments({ values }: Props) {
+  console.log({ values });
   const [checked, setChecked] = React.useState([1]);
 
   const handleToggle = (value: number) => () => {
@@ -35,62 +41,61 @@ export default function Comments() {
         overflow: "auto",
       }}
     >
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, key) => (
+      {values?.comments?.length === 0 ? (
+        <ListItemText primary="Empty" />
+      ) : (
         <>
-          <ListItem
-            alignItems="flex-start"
-            secondaryAction={
-              <Box>
-                <Checkbox
-                  icon={<DeleteOutlineOutlinedIcon />}
-                  checkedIcon={<DeleteIcon sx={{ color: "red" }} />}
+          {values?.comments?.map((item: CommentsType, key) => (
+            <>
+              <ListItem
+                alignItems="flex-start"
+                secondaryAction={
+                  <Box>
+                    <Checkbox
+                      icon={<DeleteOutlineOutlinedIcon />}
+                      checkedIcon={<DeleteIcon sx={{ color: "red" }} />}
+                    />
+                    <Checkbox
+                      edge="end"
+                      // onChange={handleToggle(value)}
+                      // checked={checked.indexOf(value) !== -1}
+                      // inputProps={{ "aria-labelledby": labelId }}
+                    />
+                  </Box>
+                }
+              >
+                <ListItemAvatar>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                </ListItemAvatar>
+
+                <ListItemText
+                  primary="Brunch this weekend?"
+                  secondary={
+                    <React.Fragment>
+                      <Typography paddingRight={5}>
+                        Lorem ipsum dolor sit amet consectetur, adipisicing
+                        elit. Velit ducimus officiis ipsum, voluptates nobis,
+                        nisi voluptatibus a dolore tempora saepe natus voluptas
+                        explicabo autem ab, totam tenetur porro perspiciatis
+                        neque! Lorem ipsum dolor sit amet consectetur
+                        adipisicing elit. Labore repudiandae natus aperiam,
+                        animi fuga, non dolorum consectetur delectus veritatis
+                        aut, ipsum harum officia! Nostrum ullam voluptatibus
+                        fugiat rem maxime aut! Lorem ipsum dolor sit amet
+                        consectetur adipisicing elit. Amet officia optio error
+                        modi officiis odit ducimus, itaque accusantium sit.
+                        Illum nesciunt, doloribus error molestias iure eligendi
+                        unde iste ab quo.
+                      </Typography>
+                    </React.Fragment>
+                  }
                 />
-                <Checkbox
-                  edge="end"
-                  // onChange={handleToggle(value)}
-                  // checked={checked.indexOf(value) !== -1}
-                  // inputProps={{ "aria-labelledby": labelId }}
-                />
-              </Box>
-            }
-          >
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {/* {" — I'll be in your neighborhood doing errands this… "} */}
-                  <Typography paddingRight={5}>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    Velit ducimus officiis ipsum, voluptates nobis, nisi
-                    voluptatibus a dolore tempora saepe natus voluptas explicabo
-                    autem ab, totam tenetur porro perspiciatis neque! Lorem
-                    ipsum dolor sit amet consectetur adipisicing elit. Labore
-                    repudiandae natus aperiam, animi fuga, non dolorum
-                    consectetur delectus veritatis aut, ipsum harum officia!
-                    Nostrum ullam voluptatibus fugiat rem maxime aut! Lorem
-                    ipsum dolor sit amet consectetur adipisicing elit. Amet
-                    officia optio error modi officiis odit ducimus, itaque
-                    accusantium sit. Illum nesciunt, doloribus error molestias
-                    iure eligendi unde iste ab quo.
-                  </Typography>
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
+              </ListItem>
+              <Divider variant="inset" component="li" />
+            </>
+          ))}
         </>
-      ))}
+      )}
     </List>
   );
 }

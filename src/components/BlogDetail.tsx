@@ -31,6 +31,7 @@ import Comments from "./Comments";
 import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 import { TransitionProps } from "@mui/material/transitions";
 import CloseIcon from "@mui/icons-material/Close";
+import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
@@ -63,6 +64,7 @@ const Transition = React.forwardRef(function Transition(
 
 const BlogDetail = (props: Props) => {
   //formdata
+  const navigate = useNavigate();
   const [category, setCategory] = useState<string>("");
   const [formdata, setFormdata] = useState<FormTypes>({
     title: "",
@@ -109,6 +111,7 @@ const BlogDetail = (props: Props) => {
       const res = await axios.post(`${apiUrl}/blogs`, data);
       console.log({ res });
       setLoading(false);
+      navigate("/category");
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -346,7 +349,7 @@ const BlogDetail = (props: Props) => {
           <Typography variant="h2">Comments</Typography>
         </Grid>
         <Grid item md={12}>
-          <Comments />
+          <Comments values={[] as any} />
         </Grid>
         <Grid
           item

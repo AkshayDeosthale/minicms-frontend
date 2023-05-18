@@ -16,6 +16,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
 import BlogListDrawer from "./BlogListDrawer";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   /**
@@ -95,6 +96,7 @@ const navItems = [
 
 export default function Header(props: Props) {
   const { window } = props;
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -119,7 +121,10 @@ export default function Header(props: Props) {
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
-          <ListItemButton sx={{ textAlign: "left" }}>
+          <ListItemButton
+            sx={{ textAlign: "left" }}
+            onClick={() => navigate("/category")}
+          >
             <ListItemText primary="Categories" />
           </ListItemButton>
         </ListItem>
@@ -152,26 +157,27 @@ export default function Header(props: Props) {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "block", cursor: "pointer" },
+            }}
+            onClick={() => navigate("/blog/create")}
           >
             MINICRM
           </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search Blog…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
+          <Search></Search>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             <Button sx={{ color: "#fff" }} onClick={openListDrawer}>
               List
             </Button>
           </Box>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Button sx={{ color: "#fff" }}>Categories</Button>
+            <Button
+              sx={{ color: "#fff" }}
+              onClick={() => navigate("/category")}
+            >
+              Categories
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>

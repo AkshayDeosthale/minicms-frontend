@@ -8,8 +8,14 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import BlogDetailPage from "./pages/BlogDetailPage.tsx";
+import CategoryList from "./pages/CategoryList.tsx";
+import Login from "./pages/Login.tsx";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Login />,
+  },
   {
     path: "blog/create",
     element: <App />,
@@ -17,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "blog/:blogId",
     element: <BlogDetailPage />,
+  },
+  {
+    path: "category/",
+    element: <CategoryList />,
   },
 ]);
 

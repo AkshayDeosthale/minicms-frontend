@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -30,11 +31,24 @@ import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 import CloseIcon from "@mui/icons-material/Close";
 import { TransitionProps } from "@mui/material/transitions";
 import Comments from "../Comments";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import DOMPurify from "dompurify";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters"),
+});
 
 type Props = {};
-
+export type CommentsType = {
+  userName: string;
+  comment: string;
+};
 export const apiUrl = import.meta.env.VITE_API_URL;
 
 export type FormTypes = {
@@ -44,7 +58,7 @@ export type FormTypes = {
   thumbnailUrl: string;
   slug: string;
   content: string;
-  comments: string[];
+  comments: CommentsType[];
 };
 
 export type CategoryType = {
@@ -63,6 +77,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const DetailById = (props: Props) => {
+  const navigate = useNavigate();
   const params = useParams();
   //formdata
   const [category, setCategory] = useState<string>("");
@@ -92,6 +107,7 @@ const DetailById = (props: Props) => {
       const res = await axios.get(`${apiUrl}/blogs/${params.blogId}`);
 
       setCategory(res.data.category);
+
       setFormdata({
         title: res.data.title,
         author: res.data.author,
@@ -102,37 +118,22 @@ const DetailById = (props: Props) => {
         comments: res.data.comments,
       });
     } catch (error) {
+      navigate("/blog/create");
       console.error(error);
     }
   };
   useEffect(() => {
     populateCategory();
-  }, [params]);
+  }, []);
 
-  function handleEditorChange(event: any, editor: any) {
-    const data = editor.getData();
-    setFormdata({ ...formdata, content: data });
-  }
+  useEffect(() => {
+    populateBlogDetail();
+  }, [params.blogId, category]);
 
   //dropdown
 
   const handleChange = (e: SelectChangeEvent) => {
     setCategory(e.target.value);
-  };
-
-  //on submit
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const onsubmit = async () => {
-    setLoading(true);
-    const data = { ...formdata, category: category };
-    try {
-      const res = await axios.patch(`${apiUrl}/blogs/${params.blogId}`, data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-    }
   };
 
   //category modal
@@ -173,6 +174,17 @@ const DetailById = (props: Props) => {
       }
     }
   }, [open]);
+
+  const handleSubmit = async (values: any, { setSubmitting }: any) => {
+    const data = { ...formdata, category: category };
+    try {
+      const res = await axios.patch(`${apiUrl}/blogs/${params.blogId}`, data);
+      setSubmitting(false);
+    } catch (error) {
+      console.error(error);
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Box
@@ -255,146 +267,169 @@ const DetailById = (props: Props) => {
 
       <Toolbar />
 
-      <Grid
-        container
-        spacing={2}
-        width="100%"
-        sx={{
-          textAlign: { xs: "center", md: "start" },
-          justifyContent: { xs: "center", md: "flex-start" },
-          marginLeft: { xs: "-10px !important" },
-        }}
+      <Formik
+        initialValues={formdata}
+        // validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize
       >
-        <Grid item xs={12}>
-          <Typography variant="h2">Update Blog</Typography>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <TextField
-            id="title"
-            label="Title"
-            variant="filled"
-            fullWidth
-            value={formdata.title}
-            onChange={(e) =>
-              setFormdata({ ...formdata, title: e.target.value })
-            }
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            id="author"
-            label="Author"
-            variant="filled"
-            value={formdata.author}
-            fullWidth
-            onChange={(e) =>
-              setFormdata({ ...formdata, author: e.target.value })
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="details"
-            label="Brief"
-            variant="filled"
-            value={formdata.brief}
-            fullWidth
-            multiline
-            rows={4}
-            onChange={(e) =>
-              setFormdata({ ...formdata, brief: e.target.value })
-            }
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <TextField
-            id="thumbnail"
-            label="Thumbnail URL"
-            value={formdata.thumbnailUrl}
-            variant="filled"
-            fullWidth
-            onChange={(e) =>
-              setFormdata({ ...formdata, thumbnailUrl: e.target.value })
-            }
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <TextField
-            id="slug"
-            label="Slug"
-            variant="filled"
-            value={formdata.slug}
-            fullWidth
-            onChange={(e) => setFormdata({ ...formdata, slug: e.target.value })}
-          />
-        </Grid>
-        <Grid item md={6} xs={12}>
-          <FormControl variant="filled" fullWidth>
-            <InputLabel id="demo-simple-select-filled-label">
-              Category
-            </InputLabel>
-            <Select value={category || ""} onChange={handleChange}>
-              {categoryList.map(
-                (category: CategoryType, key: string | number) => (
-                  <MenuItem key={key} value={category._id}>
-                    {category.name}
-                  </MenuItem>
-                )
-              )}
-              <MenuItem onClick={handleOpen}>
-                <em>Add new +</em>
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item md={12} sx={{ width: "100%" }}>
-          <CKEditor
-            editor={ClassicEditor}
-            data={formdata.content}
-            onChange={handleEditorChange}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <LoadingButton
-            variant="contained"
-            onClick={handleDialogueClickOpen("paper")}
-            endIcon={<AspectRatioIcon />}
-          >
-            Preview
-          </LoadingButton>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="h2">Comments</Typography>
-        </Grid>
-        <Grid item md={12}>
-          <Comments />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sx={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          <LoadingButton
-            variant="contained"
-            onClick={onsubmit}
-            loading={loading}
-          >
-            Save Blog
-          </LoadingButton>
-        </Grid>
-      </Grid>
+        {({
+          values,
+          errors,
+          handleChange,
+          setFieldValue,
+          handleSubmit,
+          handleReset,
+          isSubmitting,
+        }) => {
+          return (
+            <Form>
+              <Grid
+                container
+                spacing={2}
+                width="100%"
+                sx={{
+                  textAlign: { xs: "center", md: "start" },
+                  justifyContent: { xs: "center", md: "flex-start" },
+                  marginLeft: { xs: "-10px !important" },
+                }}
+              >
+                <Grid item xs={12}>
+                  <Typography variant="h2">Update Blog</Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    id="title"
+                    name="title"
+                    label="Title"
+                    variant="filled"
+                    fullWidth
+                    value={values.title}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    id="author"
+                    name="author"
+                    label="Author"
+                    variant="filled"
+                    value={values.author}
+                    fullWidth
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id="brief"
+                    name="brief"
+                    label="Brief"
+                    variant="filled"
+                    value={values.brief}
+                    fullWidth
+                    multiline
+                    rows={4}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    id="thumbnail"
+                    name="thumbnail"
+                    label="Thumbnail URL"
+                    value={values.thumbnailUrl}
+                    variant="filled"
+                    fullWidth
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <TextField
+                    id="slug"
+                    name="slug"
+                    label="Slug"
+                    variant="filled"
+                    value={values.slug}
+                    fullWidth
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item md={6} xs={12}>
+                  <FormControl variant="filled" fullWidth>
+                    <InputLabel id="demo-simple-select-filled-label">
+                      Category
+                    </InputLabel>
+                    <Select value={category || ""} onChange={handleChange}>
+                      {categoryList.map(
+                        (category: CategoryType, key: string | number) => (
+                          <MenuItem key={key} value={category._id}>
+                            {category.name}
+                          </MenuItem>
+                        )
+                      )}
+                      <MenuItem onClick={handleOpen}>
+                        <em>Add new +</em>
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item md={12} sx={{ width: "100%" }}>
+                  <CKEditor
+                    editor={ClassicEditor}
+                    data={values.content}
+                    onChange={(event: any, editor: any) => {
+                      const data = editor.getData();
+                      setFieldValue("content", data);
+                    }}
+                  />
+                </Grid>
+
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <LoadingButton
+                    variant="contained"
+                    onClick={handleDialogueClickOpen("paper")}
+                    endIcon={<AspectRatioIcon />}
+                  >
+                    Preview
+                  </LoadingButton>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h2">Comments</Typography>
+                </Grid>
+                <Grid item md={12}>
+                  <Comments values={values} />
+                </Grid>
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <LoadingButton
+                    variant="contained"
+                    onClick={() => handleSubmit()}
+                    loading={isSubmitting}
+                  >
+                    Save Blog
+                  </LoadingButton>
+                </Grid>
+              </Grid>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };
